@@ -37,6 +37,7 @@ module Data.ASN1.Prim
 
     -- * marshall an ASN1 type to a bytestring
     , putTime
+    , putBool
     , putInteger
     , putDouble
     , putBitString
@@ -99,7 +100,7 @@ encodePrimitiveHeader :: ASN1Length -> ASN1 -> ASN1Header
 encodePrimitiveHeader = encodeHeader False
 
 encodePrimitiveData :: ASN1 -> ByteString
-encodePrimitiveData (Boolean b)         = B.singleton (if b then 0xff else 0)
+encodePrimitiveData (Boolean b)         = putBool b
 encodePrimitiveData (IntVal i)          = putInteger i
 encodePrimitiveData (BitString bits)    = putBitString bits
 encodePrimitiveData (OctetString b)     = putString b
@@ -389,6 +390,9 @@ putTime ty dt mtz = BC.pack etime
                      Nothing                      -> ""
                      Just tz | tz == timezone_UTC -> "Z"
                              | otherwise          -> show tz
+
+putBool :: Bool -> ByteString
+putBool b = B.singleton (if b then 0xff else 0)
 
 putInteger :: Integer -> ByteString
 putInteger i = B.pack $ bytesOfInt i
